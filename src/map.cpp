@@ -30,39 +30,58 @@ void Map::sortEntries() {
 }
 
 bool Map::contains(const std::string& key) const {
-    (void)key;
-    throw std::logic_error("Student implementation required: contains");
+    return findIndex(key) != entries_.size();
 }
 
 bool Map::insert(const std::string& key, int value) {
-    (void)key;
-    (void)value;
-    throw std::logic_error("Student implementation required: insert");
+    if (contains(key)) {
+        return false;
+    }
+
+    entries_.push_back({key, value});
+    sortEntries();
+    return true;
 }
 
 bool Map::update(const std::string& key, int newValue) {
-    (void)key;
-    (void)newValue;
-    throw std::logic_error("Student implementation required: update");
+    const std::size_t index = findIndex(key);
+    if (index == entries_.size()) {
+        return false;
+    }
+
+    entries_[index].value = newValue;
+    return true;
 }
 
 bool Map::erase(const std::string& key) {
-    (void)key;
-    throw std::logic_error("Student implementation required: erase");
+    const std::size_t index = findIndex(key);
+    if (index == entries_.size()) {
+        return false;
+    }
+
+    entries_.erase(entries_.begin() + static_cast<std::ptrdiff_t>(index));
+    return true;
 }
 
 int Map::at(const std::string& key) const {
-    (void)key;
-    throw std::logic_error("Student implementation required: at");
+    const std::size_t index = findIndex(key);
+    if (index == entries_.size()) {
+        throw std::logic_error("Key not found");
+    }
+    return entries_[index].value;
 }
 
 int& Map::at(const std::string& key) {
-    (void)key;
-    throw std::logic_error("Student implementation required: at non-const");
+    const std::size_t index = findIndex(key);
+    if (index == entries_.size()) {
+        throw std::logic_error("Key not found");
+    }
+    return entries_[index].value;
 }
 
 std::vector<std::string> Map::keys() const {
     std::vector<std::string> result;
+    result.reserve(entries_.size());
     for (const auto& entry : entries_) {
         result.push_back(entry.key);
     }
@@ -71,6 +90,7 @@ std::vector<std::string> Map::keys() const {
 
 std::vector<int> Map::values() const {
     std::vector<int> result;
+    result.reserve(entries_.size());
     for (const auto& entry : entries_) {
         result.push_back(entry.value);
     }
